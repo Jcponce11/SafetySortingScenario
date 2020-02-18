@@ -14,6 +14,7 @@ TagManager:
   - Affirmative
   - Negative
   - nullArea
+  - HighlightObject
   layers:
   - Default
   - TransparentFX
