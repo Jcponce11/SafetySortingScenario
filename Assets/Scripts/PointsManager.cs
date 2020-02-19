@@ -15,17 +15,12 @@ public class PointsManager : MonoBehaviour
     static AudioSource audiosrc;
     public AudioClip FogHorn;
     public AudioClip Success;
-    public GameObject[] gameObjectArray;
-    GameObject[] sharpsObjectArray;
-    GameObject[] bioHazardArray;
-    GameObject[] trashArray;
     public Destructable destroyer;
     int objectCount;
 
 
     public void Start()
     {
-        composeObjectArray();
         audiosrc = GetComponent<AudioSource>();
         Points = 0;
         negaPoints = 0; //These are negative points. Don't forget these when creating a scoreboard.
@@ -38,45 +33,12 @@ public class PointsManager : MonoBehaviour
 
     private void Update()
     { 
-        if(objectCount == 0)
-        {
-            StartCoroutine(ExitScreen());
-        }
     }
 
-    void composeObjectArray()
-    {
-        sharpsObjectArray = GameObject.FindGameObjectsWithTag("Sharps");
-        bioHazardArray = GameObject.FindGameObjectsWithTag("BioHazard");
-        trashArray = GameObject.FindGameObjectsWithTag("Trash");
-
-        var list = new List<GameObject>();
-        for (int i = 0; i < sharpsObjectArray.Length; i++)
-        {
-            list.Add(sharpsObjectArray[i]);
-        }
-        for (int i = 0; i < bioHazardArray.Length; i++)
-        {
-            list.Add(bioHazardArray[i]);
-        }
-        for (int i = 0; i < trashArray.Length; i++)
-        {
-            list.Add(trashArray[i]);
-        }
-        gameObjectArray = list.ToArray();
-
-        for (int i = 0; i < gameObjectArray.Length; i++)
-        {
-            print(gameObjectArray[i].name);
-        }
-
-        print(gameObjectArray.Length);
-        objectCount = gameObjectArray.Length - 3;
-    }
+   
 
     public void AddPoints(int amount)
     {
-        --objectCount; 
         Points = Points + amount;
         audiosrc.PlayOneShot(Success);
         scoreText.text = "score: " + Points;
@@ -84,11 +46,11 @@ public class PointsManager : MonoBehaviour
         
     }
 
-    public void WarningMessage(string other)
+    public void WarningMessage(string other1)
     {
-        --objectCount;
         negaPoints = negaPoints + 1;
-        messageText.text = other;
+        messageText.text = other1;
+        Debug.Log(other1);
         audiosrc.PlayOneShot(FogHorn);
         StartCoroutine(HideMessageText());
     }
@@ -96,6 +58,7 @@ public class PointsManager : MonoBehaviour
     public void ScenarioMessage(string other)
     {
         scenarioMessageText.text = other;
+        StartCoroutine(HideScenarioText());
     }
 
     IEnumerator HideScoreText()
@@ -122,20 +85,6 @@ public class PointsManager : MonoBehaviour
         GetComponent<PointsManager>().scenarioMessageText.text = Points.ToString();
         yield return new WaitForSeconds(10);
         Application.Quit();
-
-    }
-
-    public void ObjectDestroyer(GameObject destroyableObject)
-    {
-        foreach (GameObject x in gameObjectArray)
-        {
-            if(x.Equals(destroyableObject))
-            {
-                print(x.name);
-                print(x.tag);
-                destroyableObject.transform.Translate(destroyableObject.transform.position - GameObject.Find("destroyArea").transform.position);
-            }
-        }
 
     }
 }
